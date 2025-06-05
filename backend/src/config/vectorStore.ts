@@ -5,8 +5,14 @@ let table: Table<any, { id: string }>;
 
 export async function initializeVectorStore(): Promise<void> {
   try {
+    const endpoint = process.env.ASTRA_DB_ENDPOINT;
+    const token = process.env.ASTRA_DB_TOKEN;
+    if (!endpoint || !token) {
+      throw new Error('Astra DB credentials are missing');
+    }
+
     const client = new DataAPIClient({ logging: 'error' });
-    const db = client.db(process.env.ASTRA_DB_ENDPOINT!, { token: process.env.ASTRA_DB_TOKEN! });
+    const db = client.db(endpoint, { token });
 
     const VectorTableSchema = Table.schema({
       columns: {
