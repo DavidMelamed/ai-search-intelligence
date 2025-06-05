@@ -170,7 +170,7 @@ export class EmbeddingsService {
 
       const stored = result.rows[0];
 
-      // Store in Pinecone
+      // Store in Astra DB
       await vectorStore.upsert([{
         id: data.hash,
         values: data.embedding,

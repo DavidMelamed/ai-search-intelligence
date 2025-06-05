@@ -173,9 +173,9 @@ const Settings: React.FC = () => {
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-600">Pinecone</label>
+              <label className="block text-sm font-medium text-gray-600">Astra DB</label>
               <p className="mt-1 text-sm text-gray-900">
-                {process.env.REACT_APP_PINECONE_CONFIGURED ? '✅ Configured' : '❌ Not configured'}
+                {process.env.REACT_APP_ASTRA_CONFIGURED ? '✅ Configured' : '❌ Not configured'}
               </p>
             </div>
             <div>

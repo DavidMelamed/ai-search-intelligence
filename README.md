@@ -32,7 +32,7 @@ This platform helps content creators and SEO professionals understand how AI sea
 - PostgreSQL with pgvector for embeddings storage
 - Redis for caching and real-time features
 - OpenAI/Cohere for embeddings generation
-- Pinecone/Weaviate for vector search
+ - Astra DB for vector search
 
 ### Frontend (React/TypeScript)
 - Modern React with TypeScript
