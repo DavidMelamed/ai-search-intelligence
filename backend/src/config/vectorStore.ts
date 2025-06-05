@@ -1,37 +1,28 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import { DataAPIClient, Table, vector } from '@datastax/astra-db-ts';
 import { logger } from '../utils/logger';
 
-let pineconeClient: Pinecone;
-let index: any;
+let table: Table<any, { id: string }>;
 
 export async function initializeVectorStore(): Promise<void> {
   try {
-    // Initialize Pinecone
-    pineconeClient = new Pinecone({
-      apiKey: process.env.PINECONE_API_KEY!,
+    const client = new DataAPIClient({ logging: 'error' });
+    const db = client.db(process.env.ASTRA_DB_ENDPOINT!, { token: process.env.ASTRA_DB_TOKEN! });
+
+    const VectorTableSchema = Table.schema({
+      columns: {
+        id: 'text',
+        values: { type: 'vector', dimension: 3072 },
+        metadata: 'json'
+      },
+      primaryKey: 'id'
     });
 
-    // Get or create index
-    const indexName = 'ai-search-intelligence';
-    const indexList = await pineconeClient.listIndexes();
-    
-    if (!indexList.indexes?.find(idx => idx.name === indexName)) {
-      await pineconeClient.createIndex({
-        name: indexName,
-        dimension: 3072, // OpenAI text-embedding-3-large
-        metric: 'cosine',
-        spec: {
-          serverless: {
-            cloud: 'aws',
-            region: process.env.PINECONE_ENVIRONMENT || 'us-east-1'
-          }
-        }
-      });
-      
-      logger.info('Pinecone index created');
-    }
+    table = await db.createTable('vectors', { definition: VectorTableSchema, ifNotExists: true });
+    await table.createVectorIndex('vectors_values_idx', 'values', {
+      options: { metric: 'cosine' },
+      ifNotExists: true,
+    });
 
-    index = pineconeClient.index(indexName);
     logger.info('Vector store initialized');
   } catch (error) {
     logger.error('Vector store initialization error:', error);
@@ -39,34 +30,46 @@ export async function initializeVectorStore(): Promise<void> {
   }
 }
 
-export function getVectorIndex() {
-  if (!index) {
+export function getVectorTable() {
+  if (!table) {
     throw new Error('Vector store not initialized');
   }
-  return index;
+  return table;
 }
 
-// Vector operations
 export const vectorStore = {
   async upsert(vectors: any[]): Promise<void> {
     try {
-      await index.upsert(vectors);
+      const docs = vectors.map(v => ({
+        id: v.id,
+        values: vector(v.values),
+        metadata: v.metadata
+      }));
+      await table.insertMany(docs);
     } catch (error) {
       logger.error('Vector upsert error:', error);
       throw error;
     }
   },
 
-  async query(vector: number[], topK: number = 10, filter?: any): Promise<any> {
+  async query(values: number[], topK: number = 10, filter: any = {}): Promise<any> {
     try {
-      const results = await index.query({
-        vector,
-        topK,
-        filter,
-        includeMetadata: true,
-        includeValues: true
-      });
-      return results;
+      const cursor = table
+        .find(filter)
+        .sort({ values: vector(values) })
+        .includeSimilarity(true)
+        .limit(topK);
+
+      const matches: any[] = [];
+      for await (const result of cursor) {
+        matches.push({
+          id: result.id,
+          score: result.$similarity,
+          metadata: result.metadata,
+          values: result.values,
+        });
+      }
+      return { matches };
     } catch (error) {
       logger.error('Vector query error:', error);
       throw error;
@@ -75,7 +78,9 @@ export const vectorStore = {
 
   async deleteByIds(ids: string[]): Promise<void> {
     try {
-      await index.deleteMany(ids);
+      for (const id of ids) {
+        await table.deleteOne({ id });
+      }
     } catch (error) {
       logger.error('Vector delete error:', error);
       throw error;

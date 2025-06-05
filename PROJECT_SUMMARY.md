@@ -79,7 +79,7 @@ ai-search-intelligence/
 - ✅ JWT authentication
 - ✅ OpenAI/Cohere embeddings integration
 - ✅ SERP API integration for search data
-- ✅ Pinecone vector store integration
+ - ✅ Astra DB vector store integration
 - ✅ Comprehensive error handling and logging
 
 ### Frontend Features
@@ -109,8 +109,8 @@ You'll need to obtain the following API keys:
 2. **SerpAPI Key**: For search data
    - Get it from: https://serpapi.com/
 
-3. **Pinecone API Key**: For vector storage
-   - Get it from: https://www.pinecone.io/
+3. **Astra DB Token**: For vector storage
+   - Get it from: https://astra.datastax.com/
 
 4. **Cohere API Key** (Optional): Fallback for embeddings
    - Get it from: https://cohere.ai/
@@ -122,7 +122,7 @@ You'll need to obtain the following API keys:
    - Push the code using the provided git commands
 
 2. **Configure external services:**
-   - Set up Pinecone index
+   - Set up Astra DB
    - Configure PostgreSQL with pgvector
    - Set up Redis instance
 

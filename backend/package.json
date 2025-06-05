@@ -12,11 +12,16 @@
     "db:migrate": "node dist/scripts/migrate.js",
     "db:seed": "node dist/scripts/seed.js"
   },
-  "keywords": ["ai", "search", "seo", "embeddings"],
+  "keywords": [
+    "ai",
+    "search",
+    "seo",
+    "embeddings"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@pinecone-database/pinecone": "^2.0.1",
+    "@datastax/astra-db-ts": "^2.0.1",
     "@types/cors": "^2.8.17",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",

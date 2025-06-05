@@ -31,7 +31,7 @@ The AI Search Intelligence Platform is a comprehensive solution for analyzing an
 - **Framework**: Express.js
 - **Database**: PostgreSQL 15+ with pgvector extension
 - **Cache**: Redis 7+
-- **Vector Store**: Pinecone/Weaviate
+- **Vector Store**: Astra DB
 - **Queue**: Bull (Redis-based)
 - **Authentication**: JWT
 - **Real-time**: Socket.io
@@ -57,7 +57,7 @@ The AI Search Intelligence Platform is a comprehensive solution for analyzing an
          ▼                       ▼                        ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
-│   WebSocket     │     │     Redis       │     │   Pinecone      │
+│   WebSocket     │     │     Redis       │     │   Astra DB      │
 │   (Socket.io)   │     │    (Cache)      │     │ (Vector Store)  │
 │                 │     │                 │     │                 │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
@@ -134,7 +134,8 @@ docker-compose up
 | `JWT_SECRET` | Secret key for JWT tokens | Yes |
 | `OPENAI_API_KEY` | OpenAI API key for embeddings | Yes |
 | `COHERE_API_KEY` | Cohere API key (fallback) | Optional |
-| `PINECONE_API_KEY` | Pinecone vector store API key | Yes |
+| `ASTRA_DB_ENDPOINT` | Astra DB Data API endpoint | Yes |
+| `ASTRA_DB_TOKEN` | Astra DB application token | Yes |
 | `SERP_API_KEY` | SerpAPI key for search data | Yes |
 
 ### Frontend Environment Variables
